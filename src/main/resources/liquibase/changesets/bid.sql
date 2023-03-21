@@ -1,0 +1,9 @@
+-- --liquibase formatted sql
+--
+-- --changeset akucher:2
+-- create table bid (
+--                      id              serial                           not null  primary key ,
+--                      bidderName      varchar                          not null,
+--                      bidDate         timestamp without time zone      not null,
+--                      lot_Id          integer references lot (id)
+--                     );
