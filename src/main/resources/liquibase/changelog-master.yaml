@@ -1,5 +1,5 @@
-#databaseChangeLog:
-#  - include:
-#      file: liquibase/changesets/lot.sql
-#  - include:
-#      file: liquibase/changesets/bid.sql
+databaseChangeLog:
+  - include:
+      file: liquibase/changesets/lot.sql
+  - include:
+      file: liquibase/changesets/bid.sql

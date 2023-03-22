@@ -1,9 +1,6 @@
 package com.example.easyauction.controller;
 
-import com.example.easyauction.dto.BidDTO;
-import com.example.easyauction.dto.CreatLot;
-import com.example.easyauction.dto.LotDTO;
-import com.example.easyauction.projections.FrequentBidderView;
+import com.example.easyauction.dto.*;
 import com.example.easyauction.service.BidService;
 import com.example.easyauction.service.LotService;
 import lombok.SneakyThrows;
@@ -42,7 +39,7 @@ public class Lots {
     }
 //Возвращает имя ставившего на данный лот наибольшее количество раз
     @GetMapping("{id}/frequent")
-    public ResponseEntity<FrequentBidderView> getMostFrequentBidder(@PathVariable Integer id){
+    public ResponseEntity<CreatBid> getMostFrequentBidder(@PathVariable Integer id){
         if (lotService.findMostFrequentBidder(id)==null){
             ResponseEntity.status(HttpStatus.NOT_FOUND).body("Лот не найден");
         }
@@ -65,11 +62,9 @@ public class Lots {
     }
 //Создает новую ставку по лоту. Если лот в статусе CREATED или STOPPED, то должна вернутся ошибка
     @PostMapping("{id}/bid")
-    public ResponseEntity createBid(@PathVariable Integer id, @RequestBody FrequentBidderView bidderView) throws IOException {
-        if (bidService.createBid(id, bidderView)){
-            ResponseEntity.status(200).body("Ставка сделана");
-        }
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity createBid(@PathVariable Integer id, @RequestBody CreatBid creatBid) throws IOException {
+        bidService.createBid(id, creatBid);
+       return ResponseEntity.status(200).body("Ставка сделана");
     }
 //Остановить торги по лоту.Переводит лот в состояние "остановлен", которое запрещает делать ставки на лот.
 // Если лот уже находится в состоянии "остановлен", то ничего не делает и возвращает 200
@@ -82,9 +77,6 @@ public class Lots {
 // если есть ошибки в полях объекта лота - то нужно вернуть статус с ошибкой
     @PostMapping
     public ResponseEntity createLot(@RequestBody CreatLot creatLot) {
-        if (lotService.createLot(creatLot)==null){
-            return ResponseEntity.badRequest().body("Лот передан с ошибкой");
-        }
         return ResponseEntity.ok(lotService.createLot(creatLot));
     }
 //Получить все лоты, основываясь на фильтре статуса и номере страницы.
@@ -102,6 +94,6 @@ public class Lots {
     public void getCSVFile(HttpServletResponse response) throws IOException {
         response.setContentType("text/csv");
         response.addHeader("Content-Disposition", "attachment; filename=\"lot.csv\"");
-        lotService.writeLotsToCsv((List<LotDTO>) lotService.findAll(), response.getWriter());
+        lotService.writeLotsToCsv(lotService.findAll(), response.getWriter());
     }
 }

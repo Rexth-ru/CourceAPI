@@ -1,10 +1,11 @@
 package com.example.easyauction.service;
 
 import com.example.easyauction.dto.BidDTO;
+import com.example.easyauction.dto.CreatBid;
 import com.example.easyauction.en.Status;
 import com.example.easyauction.model.Bid;
 import com.example.easyauction.model.Lot;
-import com.example.easyauction.projections.FrequentBidderView;
+
 import com.example.easyauction.repository.BidRepository;
 import com.example.easyauction.repository.LotRepository;
 import lombok.Data;
@@ -29,26 +30,14 @@ public class BidService {
         Collection<Bid> bids = Objects.requireNonNull(lot).getBid();
         return BidDTO.bidToDTO(bids.stream().min(Comparator.comparing(Bid::getBidDate)).get());
     }
-
-    //public BidDTO getMostFrequentBidder(Integer idLot){
-//    Lot lot = lotRepository.findById(idLot).orElse(null);
-//    Collection<Bid> bids = Objects.requireNonNull(lot).getBid();
-//    bids.stream().map(Bid::getBidderName).collect(Collectors.toList())
-//}
-//public String creatBid(Integer id){
-//
-//
-//}
-    public boolean createBid(Integer idLot, FrequentBidderView bidderView) throws IOException {
+    public void createBid(Integer idLot, CreatBid creatBid) throws IOException {
         Lot lot = lotRepository.findById(idLot).orElse(null);
         if (lot.getStatus().equals(Status.CREATED) || lot.getStatus().equals(Status.STOPPED)) {
-            return false;
+            throw new IOException();
         }
-        Bid bid = new Bid();
-        bid.setBidderName(bidderView.getBidderName());
+        Bid bid = creatBid.toBid();
         bid.setLot(lot);
         bid.setBidDate(LocalDateTime.now());
         BidDTO.bidToDTO(bidRepository.save(bid));
-        return true;
     }
 }
