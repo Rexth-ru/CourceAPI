@@ -1,13 +1,8 @@
 package com.example.easyauction.dto;
-
 import com.example.easyauction.model.Bid;
-import com.example.easyauction.model.Lot;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Data
 public class BidDTO {
@@ -22,7 +17,6 @@ public class BidDTO {
         bidDTO.setId(bid.getId());
         bidDTO.setBidderName(bid.getBidderName());
         bidDTO.setBidDate(bid.getBidDate());
-               // .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         bidDTO.setLotId(bid.getLot().getId());
         return bidDTO;
     }
@@ -31,8 +25,6 @@ public class BidDTO {
        bid.setId(this.getId());
        bid.setBidderName(this.getBidderName());
        bid.setBidDate(this.getBidDate());
-               //LocalDateTime.parse(this.getBidDate(), DateTimeFormatter.ISO_DATE_TIME));
-
        return bid;
     }
 }

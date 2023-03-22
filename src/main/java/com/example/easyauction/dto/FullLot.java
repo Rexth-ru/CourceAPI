@@ -1,13 +1,11 @@
 package com.example.easyauction.dto;
 
-import com.example.easyauction.en.Status;
-import com.example.easyauction.model.Bid;
 import com.example.easyauction.model.Lot;
+import com.example.easyauction.prijection.BidNameDate;
 import lombok.Data;
 
 @Data
 public class FullLot {
-//    private LotDTO lotDTO;
     private Integer id;
     private String status;
     private String title;
@@ -15,7 +13,7 @@ public class FullLot {
     private Integer startPrice;
     private Integer bidPrice;
     private Integer currentPrice;
-    private BidDTO lastBid;
+    private BidNameDate lastBid;
 
     public static FullLot lotToFullLot(Lot lot) {
         FullLot fullLot = new FullLot();

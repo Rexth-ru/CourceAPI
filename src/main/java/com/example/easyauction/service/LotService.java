@@ -2,8 +2,8 @@ package com.example.easyauction.service;
 
 import com.example.easyauction.dto.*;
 import com.example.easyauction.en.Status;
-import com.example.easyauction.model.Bid;
 import com.example.easyauction.model.Lot;
+import com.example.easyauction.prijection.BidNameDate;
 import com.example.easyauction.repository.LotRepository;
 import lombok.Data;
 import org.apache.commons.csv.CSVFormat;
@@ -25,14 +25,13 @@ public class LotService {
     private final LotRepository lotRepository;
 
     public FullLot getFullLotById(Integer id){
-        Lot lot = lotRepository.findById(id).orElse(null);
+        Lot lot = lotRepository.findById(id).get();
         if (lot==null){
             return null;
         }
-        Bid lastBid = lotRepository.findLastBidByIdLot(id);
         FullLot fullLot = FullLot.lotToFullLot(lot);
         fullLot.setCurrentPrice(currentPrice(id, fullLot.getStartPrice(), fullLot.getBidPrice()));
-        fullLot.setLastBid(BidDTO.bidToDTO(lastBid));
+        fullLot.setLastBid(lotRepository.findLastBidByIdLot(id));
         return fullLot;
     }
     public LotDTO createLot(CreatLot creatLot) {
@@ -55,13 +54,14 @@ public class LotService {
         }
         lot.setStatus(Status.STOPPED);
     }
-    public Collection<LotDTO> findAllLotsByStatus(String status, Integer page){
+    public Collection<LotDTO> findAllLotsByStatus(Status status, Integer page){
         PageRequest pageRequest = PageRequest.of(page,10);
+
         Collection<Lot> lots = lotRepository.findLotsByStatus(status, pageRequest);
         return lots.stream().map(LotDTO::lotToDTO).collect(Collectors.toList());
     }
-    public CreatBid findMostFrequentBidder(Integer id){
-       return CreatBid.bidToCreatBid(lotRepository.findBidMaxLot(id));
+    public BidNameDate findMostFrequentBidder(Integer id){
+      return lotRepository.findBidMaxLot(id);
     }
     private Integer currentPrice(Integer idLot, Integer startPrice, Integer bidPrice){
        return lotRepository.countBidByIdLot(idLot)*bidPrice+startPrice;
@@ -70,8 +70,10 @@ public class LotService {
         try {
             CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
             for (FullLot lot : lots) {
-                printer.printRecord(lot.getId(), lot.getTitle(), lot.getStatus(), lot.getLastBid(),
-                        lot.getCurrentPrice(), lot.getStartPrice(), lot.getBidPrice());
+                printer.printRecord(lot.getId(), lot.getTitle(), lot.getStatus(),
+                        lotRepository.findLastBidByIdLot(lot.getId()).getBidderName(),
+                        currentPrice(lot.getId(), lot.getStartPrice(), lot.getBidPrice()),
+                        lot.getStartPrice() , lot.getBidPrice());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -1,21 +1,15 @@
 package com.example.easyauction.controller;
-
 import com.example.easyauction.dto.*;
+import com.example.easyauction.en.Status;
 import com.example.easyauction.service.BidService;
 import com.example.easyauction.service.LotService;
 import lombok.SneakyThrows;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-import org.hibernate.annotations.Parameter;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Writer;
-import java.util.List;
+
 
 @RestController
 @RequestMapping("lot")
@@ -39,7 +33,7 @@ public class Lots {
     }
 //Возвращает имя ставившего на данный лот наибольшее количество раз
     @GetMapping("{id}/frequent")
-    public ResponseEntity<CreatBid> getMostFrequentBidder(@PathVariable Integer id){
+    public ResponseEntity<?> getMostFrequentBidder(@PathVariable Integer id){
         if (lotService.findMostFrequentBidder(id)==null){
             ResponseEntity.status(HttpStatus.NOT_FOUND).body("Лот не найден");
         }
@@ -85,7 +79,7 @@ public class Lots {
 // Лимит на количество лотов на странице - 10 штук.
 
     @GetMapping()
-    public ResponseEntity findLots(@RequestParam String status, @RequestParam Integer page){
+    public ResponseEntity findLots(@RequestParam Status status, @RequestParam Integer page){
 
         return ResponseEntity.ok(lotService.findAllLotsByStatus(status,page));
     }
