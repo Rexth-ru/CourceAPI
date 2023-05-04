@@ -1,6 +1,5 @@
 package com.example.easyauction.dto;
 
-import com.example.easyauction.en.Status;
 import com.example.easyauction.model.Lot;
 import lombok.Data;
 
